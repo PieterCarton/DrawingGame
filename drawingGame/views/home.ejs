@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <h1>Welcome to the best drawing game ever!!!</h1>
+
+        <h2>Create Lobby:</h2>
+        <form action="/lobby" method="GET">
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username" placeholder="Username"><br>
+            <input type="submit" value="Join Lobby">
+        </form>
+
+        <h2>Join Lobby:</h2>
+        <form action="/lobby" method="GET">
+            <label for="lobbyField">Lobby code:</label><br>
+            <input type="text" id="lobbyField" name="lobby" placeholder="XXXX" pattern="[A-Z]{4}"><br>
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username" placeholder="Username"><br>
+            <input type="submit" value="Join Lobby">
+        </form>
+    </body>
+</html>

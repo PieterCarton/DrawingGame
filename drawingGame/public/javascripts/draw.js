@@ -2,8 +2,8 @@
 function canvasDrawer(canvas){
     //canvas info
     this.canvas = canvas;
-    this.canvasWidth = Math.round(canvas.innerWidth);
-    this.canvasHeight = Math.round(canvas.innerHeight);
+    this.width = canvas.width;
+    this.height = canvas.width;
     
     this.previousPosition;
     this.currentPosition;
@@ -13,10 +13,16 @@ function canvasDrawer(canvas){
     this.lineWidth = 10;
     this.strokeColor = "#FF0000";
 
+    //undo variables
+    this.undoFrames = [];
+    this.savedFrames = 0;
+    this.maxSavedFrames = 10;
+    this.frameIndex = 0;
+
     //methods
     this.updateMousePosition = function(event){
         this.previousPosition = this.currentPosition;
-        this.currentPosition = new point(event.clientX, event.clientY);
+        this.currentPosition = new point(event.offsetX, event.offsetY);
     };
 
     this.drawLine = function(event){
@@ -41,6 +47,7 @@ function canvasDrawer(canvas){
     };
 
     this.startDrawing = function(event){
+		this.saveFrame();
         this.updateMousePosition(event);
         this.isDrawing = true;
         let context = this.canvas.getContext("2d");
@@ -53,12 +60,16 @@ function canvasDrawer(canvas){
         this.isDrawing = false;
         let context = this.canvas.getContext("2d");
         context.closePath();
-        context.save();
+    };
+
+    this.onLeave = function(event){
+        if(this.isDrawing){
+            this.stopDrawing(event);
+        }
     };
     
     this.undo = function(){
         let context = this.canvas.getContext("2d");
-        context.restore();
     }
 
     //set line parameters
@@ -69,7 +80,38 @@ function canvasDrawer(canvas){
     this.setLineWidth = function(width){
         this.lineWidth = width;
     };
-    
+
+    //save/undo functions
+    this.saveFrame = function(){
+        let frame = this.getImageData();
+        //update number of saved frames
+        if(this.savedFrames < this.maxSavedFrames){
+            this.savedFrames++;
+        }
+        //place in saved frames array
+        let index = this.frameIndex % this.maxSavedFrames;
+        this.undoFrames[index] = this.getImageData();
+        //update frame index
+        this.frameIndex++;
+    }
+
+    this.canUndo = function(){
+        return (this.savedFrames > 0);
+    }
+
+    this.undo = function(){
+        if(!this.canUndo()){
+            console.log("ERROR: no available saved frames");
+            return;
+        }
+        this.frameIndex--;
+        let prevFrameIndex = this.frameIndex % this.maxSavedFrames;
+        let prevFrame = this.undoFrames[prevFrameIndex];
+
+        this.setImageData(prevFrame);
+
+        this.savedFrames--;
+    }
 
     //image data manipulation
     this.clearImageData = function(){
@@ -80,7 +122,7 @@ function canvasDrawer(canvas){
     
     this.getImageData = function(){
         let context = this.canvas.getContext("2d");
-        return context.getImageData(0, 0, 1000, 1000);
+        return context.getImageData(0, 0, this.width, this.height);
     };
     
     this.setImageData = function(imgData){
@@ -92,13 +134,10 @@ function canvasDrawer(canvas){
     canvas.onmousedown = this.startDrawing.bind(this);
     canvas.onmouseup = this.stopDrawing.bind(this);
     canvas.onmousemove = this.drawLine.bind(this);
-    canvas.onmouseleave = this.drawLine.bind(this);
+    canvas.onmouseleave = this.onLeave.bind(this);
 }
 
 function point(x, y){
     this.x = x;
     this.y = y;
 }
-
-var canvas = document.querySelector("#myCanvas");
-var drawer = new canvasDrawer(canvas);
