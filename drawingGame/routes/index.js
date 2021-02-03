@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const lobbyManager = require("../lobbyManager");
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -8,9 +9,23 @@ router.get('/', function(req, res, next) {
 
 router.get('/lobby', function(req, res, next) {
   if (req.query.lobby) {
-    res.render('lobby', {lobbyCode: req.query.lobby});
+    res.render('lobby', {lobbyCode: req.query.lobby, username: req.query.username});
   } else {
-    res.redirect(`/lobby?lobby=${"AAAA"}&username=${req.query.username}`);
+    if (req.query.username) {
+      let code = lobbyManager.createLobby();
+      if (code == false) {
+        res.render('home', {});
+        return;
+      };
+      res.redirect(`/lobby?lobby=${code}&username=${req.query.username}`);
+    } else {
+      let code = lobbyManager.createLobby();
+      if (code == false) {
+        res.render('home', {});
+        return;
+      };
+      res.redirect(`/lobby?lobby=${code}`);
+    }
   }
 });
 

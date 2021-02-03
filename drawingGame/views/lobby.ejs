@@ -1,9 +1,22 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel="stylesheet" href="stylesheets/lobby.css">
     </head>
     <body>
         <h1>This is lobby <%= lobbyCode %></h1>
+        <ul id="playerList">
+            <li><b><%= username %></b></li>
+        </ul>
+
+        Invite players with this link: <button id="lobbyLink">Copy Link</button>
+
+        <div id="chatBox">
+            <ul id="chatMessageBox">
+                <li><b><%= username %></b> joined</li>
+            </ul>
+            <input id="chatInput" type="text">
+        </div>
     </body>
     <script src="javascripts/messages.js"></script>
     <script src="javascripts/lobby.js"></script>

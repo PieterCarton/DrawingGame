@@ -1,0 +1,36 @@
+#chatBox {
+    position: relative;
+    width: 600px;
+    height: 250px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+#chatMessageBox {
+    margin: 5px 0px;
+    height: calc(100% - 45px);
+    overflow: auto;
+}
+
+#chatMessageBox li {
+    background: #eee;
+    padding: 3px;
+    margin: 4px;
+    margin-right: 50px;
+}
+
+#chatInput {
+    background: #dbe9ff;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    height: 40px;
+    width: 100%;
+    padding-left: 25px;
+
+    box-sizing: border-box;
+    border-style: hidden;
+    border-top:  2px solid  #aaa;;
+    border-radius: 2px 2px 10px 10px;
+}
