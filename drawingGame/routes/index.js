@@ -9,7 +9,11 @@ router.get('/', function(req, res, next) {
 
 router.get('/lobby', function(req, res, next) {
   if (req.query.lobby) {
-    res.render('lobby', {lobbyCode: req.query.lobby, username: req.query.username});
+    if (lobbyManager.lobbyExists(req.query.lobby)) {
+      res.render('lobby', {lobbyCode: req.query.lobby});
+    } else {
+      res.redirect('/');
+    }
   } else {
     if (req.query.username) {
       let code = lobbyManager.createLobby();
@@ -21,8 +25,7 @@ router.get('/lobby', function(req, res, next) {
     } else {
       let code = lobbyManager.createLobby();
       if (code == false) {
-        res.render('home', {});
-        return;
+        res.redirect('/');
       };
       res.redirect(`/lobby?lobby=${code}`);
     }

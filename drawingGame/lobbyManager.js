@@ -1,20 +1,22 @@
 function lobby(code) {
     this.code = code;
+    this.playerIDcounter = 0;
 
-    this.players = [];
+    this.players = {};
 
     this.addPlayer = function(player) {
-        this.players.push(player);
+        player.setLobby(this.code, this.playerIDcounter);
+        this.players[this.playerIDcounter++] = player;
         console.log(`${player.username} joined lobby ${this.code}`);
     }
 
     this.removePlayer = function(player) {
-        this.players.splice(this.players.indexOf(player), 1);
+        delete this.players[player.lobbyID];
         return this.players.length;
     }
 
     this.getPlayers = function() {
-        return this.players;
+        return Object.values(this.players);
     }
 
     this.isEmpty = function() {
@@ -88,7 +90,15 @@ module.exports = new (function() {
 
     this.deleteIfEmpty = function(lobbies, code) {
         if (lobbies[code] && lobbies[code].isEmpty()) {
+            console.log(`Removing lobby: ${code}`);
             delete lobbies[code];
         }
+    }
+
+    this.lobbyExists = function(code) {
+        if (this.lobbies[code]) {
+            return true;
+        }
+        return false;
     }
 })();

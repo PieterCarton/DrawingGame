@@ -34,3 +34,40 @@
     border-top:  2px solid  #aaa;;
     border-radius: 2px 2px 10px 10px;
 }
+
+.username {
+    font-weight: bold;
+}
+
+/* player colors*/
+.p1 {
+    color: #7698f5
+}
+
+.p2 {
+    color: #6ef0a9
+}
+
+.p3 {
+    color: #f06e6e
+}
+
+.p4 {
+    color: #f0cf6e
+}
+
+.p5 {
+    color: #c076f5
+}
+
+.p6 {
+    color: #83f2eb
+}
+
+.p7 {
+    color: #e39954
+}
+
+.p8 {
+    color: #f593ee
+}

@@ -2,7 +2,6 @@ const websocket = require("ws");
 const messages = require("./public/javascripts/messages.js");
 const lobbyManager = require("./lobbyManager.js");
 const Player = require("./player.js");
-const player = require("./player.js");
 
 let websockets = {};
 let connectionID = 0;
@@ -24,15 +23,24 @@ module.exports = function(server) {
             if (jsonData.type == messages.T_JOIN_LOBBY) {
                 let username = jsonData.username;
                 let code = jsonData.code;
-                let newPlayer = new Player(ws.id, username, code);
+                let newPlayer = new Player(ws.id, username);
                 ws.player = newPlayer;
 
                 console.log(`Player Joining...: username=${username}, code=${code}`);
 
+                //If join failed let the player know and return.
                 if (!lobbyManager.addPlayerToLobby(newPlayer, code)) {
                     console.log("Player tried to join lobby that does not exist.");
+                    let msg = messages.O_JOIN_SUCCESSFUL;
+                    msg.status = "failed";
+                    ws.send(JSON.stringify(msg));
                     return;
                 }
+
+                let msg = messages.O_JOIN_SUCCESSFUL;
+                msg.status = "successful";
+                msg.lobbyID = newPlayer.lobbyID;
+                ws.send(JSON.stringify(msg));
 
                 //Send message to players that the player has joined.
                 //And send messages for every player that has already joined.
@@ -43,22 +51,24 @@ module.exports = function(server) {
                     let msg = messages.O_PLAYER_JOINED;
 
                     //send message to previously joined player
+                    msg.lobbyID = newPlayer.lobbyID;
                     msg.username = username;
                     console.log(`Sending ${JSON.stringify(msg)} ...`);
                     websockets[player.connectionID].send(JSON.stringify(msg));
 
                     //send message to joining player
                     msg.username = player.username;
+                    msg.lobbyID = player.lobbyID;
                     console.log(`Sending ${JSON.stringify(msg)} ...`);
                     ws.send(JSON.stringify(msg));
                 }
             } else if (jsonData.type == messages.T_CHAT_MESSAGE) {
-                let username = jsonData.username;
+                let lobbyID = jsonData.lobbyID;
                 let message = jsonData.message;
                 let lobbyCode = ws.player.lobbyCode;
 
                 let msg = messages.O_CHAT_MESSAGE;
-                msg.username = username;
+                msg.lobbyID = lobbyID;
                 msg.message = message;
 
                 //Send chat message all players in lobby.
@@ -79,8 +89,8 @@ module.exports = function(server) {
             lobbyManager.removePlayerFromLobby(leavingPlayer);
 
             //send message that the player left.
-            let msg = messages.O_PLAYER_LEAVED;
-            msg.username = leavingPlayer.username;
+            let msg = messages.O_PLAYER_LEFT;
+            msg.lobbyID = leavingPlayer.lobbyID;
 
             console.log(`Sending ${JSON.stringify(msg)} to all players in lobby...`);
 
