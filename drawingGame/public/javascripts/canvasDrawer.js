@@ -1,5 +1,5 @@
 //canvas drawer constructor
-function canvasDrawer(canvas){
+function CanvasDrawer(canvas){
     //canvas info
     this.canvas = canvas;
     this.width = canvas.width;
@@ -22,7 +22,7 @@ function canvasDrawer(canvas){
     //methods
     this.updateMousePosition = function(event){
         this.previousPosition = this.currentPosition;
-        this.currentPosition = new point(event.offsetX, event.offsetY);
+        this.currentPosition = new Point(event.offsetX, event.offsetY);
     };
 
     this.drawLine = function(event){
@@ -32,7 +32,6 @@ function canvasDrawer(canvas){
         if(!this.isDrawing){
             return;
         }
-
         //draw graphics
         let context = this.canvas.getContext("2d");
         context.lineWidth = this.lineWidth;
@@ -126,6 +125,11 @@ function canvasDrawer(canvas){
     };
     
     this.setImageData = function(imgData){
+        //set to clear canvas if image data is no defined
+        if(imgData == undefined){
+            this.clearImageData();
+            return;
+        }//if image data is defined, set image data of canvas to new imgData
         let context = this.canvas.getContext("2d");
         context.putImageData(imgData, 0, 0);
     };
@@ -135,9 +139,4 @@ function canvasDrawer(canvas){
     canvas.onmouseup = this.stopDrawing.bind(this);
     canvas.onmousemove = this.drawLine.bind(this);
     canvas.onmouseleave = this.onLeave.bind(this);
-}
-
-function point(x, y){
-    this.x = x;
-    this.y = y;
 }

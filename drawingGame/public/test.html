@@ -1,10 +1,27 @@
 <!DOCTYPE html>
 <html>
     <head>
+    <link rel="stylesheet" href="stylesheets/test.css" type="text/css">
     </head>
     <body>
-        <canvas id="myCanvas" width="1000" height="1000" style="border:1px solid #000000;"></canvas>
+        <header class="game-title">
+			<h1>
+			    Drawing Game
+			</h1>
+		</header>
+        <main>
+            <div class="info-content"></div>
+            <div class="main-content">
+            </div>
+            <div class="misc-content"></div>
+        </main>
+        <footer>
+            ©2021
+        </footer>
     </body>
-    <script src="javascripts/draw.js"></script>
+    <script src="javascripts/drawingFrame.js"></script>
+    <script src="javascripts/frameSequence.js"></script>
+    <script src="javascripts/point.js"></script>
+    <script src="javascripts/canvasDrawer.js"></script>
     <script src="javascripts/canvasContext.js"></script>
 </html>
