@@ -15,19 +15,40 @@
     exports.T_JOIN_LOBBY = "JOIN-LOBBY";
     exports.O_JOIN_LOBBY = {
         type: exports.T_JOIN_LOBBY,
-        data: ""
+        username: "",
+        code: ""
     };
     exports.S_JOIN_LOBBY = JSON.stringify(exports.O_JOIN_LOBBY);
 
     /*
-     * Server to player: Player joined lobby with code and username.
+     * Server to player: Player joined lobby.
      */
     exports.T_PLAYER_JOINED = "PLAYER-JOINED";
     exports.O_PLAYER_JOINED = {
         type: exports.T_PLAYER_JOINED,
-        username: "",
-        code: ""
+        username: ""
     };
     exports.S_PLAYER_JOINED = JSON.stringify(exports.O_PLAYER_JOINED);
+
+    /*
+     * Server to player: Player leaved lobby.
+     */
+    exports.T_PLAYER_LEAVED = "PLAYER-LEAVED";
+    exports.O_PLAYER_LEAVED = {
+        type: exports.T_PLAYER_LEAVED,
+        username: ""
+    };
+    exports.S_PLAYER_LEAVED = JSON.stringify(exports.O_PLAYER_LEAVED);
+
+    /*
+     * Player to server and player to server: a chat message send by username;
+    */
+    exports.T_CHAT_MESSAGE = "CHAT-MESSAGE";
+    exports.O_CHAT_MESSAGE = {
+        type: exports.T_CHAT_MESSAGE,
+        username: "",
+        message: ""
+    };
+    exports.S_CHAT_MESSAGE = JSON.stringify(exports.O_CHAT_MESSAGE);
 
 })(typeof exports === "undefined" ? (this.Messages = {}) : exports);
