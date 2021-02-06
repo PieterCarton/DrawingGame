@@ -132,9 +132,11 @@ function Player(username, lobbyID) {
         } else if (jsonData.type == Messages.T_PLAYER_LEFT) {
             console.log(`Player Left: ${players[jsonData.lobbyID].username}`);
 
-            delete players[jsonData.lobbyID];
-
             removeFromPlayerList(jsonData.lobbyID);
+            +
+            createChatMessage(jsonData.lobbyID, "left!", true);
+
+            delete players[jsonData.lobbyID];
         } else if (jsonData.type == Messages.T_CHAT_MESSAGE) {
             createChatMessage(jsonData.lobbyID, jsonData.message);
         }

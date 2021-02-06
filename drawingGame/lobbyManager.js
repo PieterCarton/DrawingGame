@@ -1,3 +1,5 @@
+const Messages = require("./public/javascripts/messages.js");
+
 function lobby(code) {
     this.code = code;
     this.playerIDcounter = 0;
@@ -8,6 +10,7 @@ function lobby(code) {
         player.setLobby(this.code, this.playerIDcounter);
         this.players[this.playerIDcounter++] = player;
         console.log(`${player.username} joined lobby ${this.code}`);
+        return true;
     }
 
     this.removePlayer = function(player) {
@@ -21,6 +24,19 @@ function lobby(code) {
 
     this.isEmpty = function() {
         return this.players.length == 0;
+    }
+
+    this.sendMsgToAllPlayers = function(msg) {
+        if (this.isEmpty()) {
+            return;
+        }
+        for (let player of this.getPlayers()) {
+            player.websocket.send(JSON.stringify(msg));
+        }
+    }
+
+    this.sendMsgToPlayer = function(lobbyID, msg) {
+        this.players[lobbyID].websocket.send(JSON.stringify(msg));
     }
 }
 
@@ -58,12 +74,44 @@ module.exports = new (function() {
         return code;
     }
 
-    this.addPlayerToLobby = function(player, code) {
+    this.addPlayerToLobby = function(newPlayer, code) {
         if (!this.lobbies[code]) {
+            console.log("Player tried to join lobby that does not exist.");
+            let msg = Messages.O_JOIN_SUCCESSFUL;
+            msg.status = "failed";
+            ws.send(JSON.stringify(msg));
             return false;
         }
 
-        this.lobbies[code].addPlayer(player);
+        if (!this.lobbies[code].addPlayer(newPlayer)) {
+            return false;
+        }
+
+        let msg = Messages.O_JOIN_SUCCESSFUL;
+        msg.status = "successful";
+        msg.lobbyID = newPlayer.lobbyID;
+        newPlayer.websocket.send(JSON.stringify(msg));
+
+        //Send message to previously joined players that the player has joined.
+        //And send messages for every player that has already joined.
+        for (let player of this.getPlayersInLobby(code)) {
+            if (player == newPlayer) {
+                continue;
+            }
+            let msg = Messages.O_PLAYER_JOINED;
+
+            //send message to previously joined player
+            msg.lobbyID = newPlayer.lobbyID;
+            msg.username = newPlayer.username;
+            console.log(`Sending ${JSON.stringify(msg)} ...`);
+            player.websocket.send(JSON.stringify(msg));
+
+            //send message to joining player
+            msg.username = player.username;
+            msg.lobbyID = player.lobbyID;
+            console.log(`Sending ${JSON.stringify(msg)} ...`);
+            newPlayer.websocket.send(JSON.stringify(msg));
+        }
 
         return true;
     }
@@ -73,13 +121,23 @@ module.exports = new (function() {
             return false;
         }
 
-        if (!this.lobbies[player.lobbyCode]) {
+        let code = player.lobbyCode;
+
+        if (!this.lobbies[code]) {
             return false;
         }
 
-        this.lobbies[player.lobbyCode].removePlayer(player);
+        this.lobbies[code].removePlayer(player);
 
-        setTimeout(this.deleteIfEmpty, 10000, this.lobbies, player.lobbyCode);
+        setTimeout(this.deleteIfEmpty, 10000, this.lobbies, code);
+
+        //send message that the player left.
+        let msg = Messages.O_PLAYER_LEFT;
+        msg.lobbyID = player.lobbyID;
+
+        console.log(`Sending ${JSON.stringify(msg)} to all players in lobby...`);
+
+        this.lobbies[code].sendMsgToAllPlayers(msg);
 
         return true;
     }
@@ -101,4 +159,16 @@ module.exports = new (function() {
         }
         return false;
     }
+
+    //Send chat message all players in lobby.
+    this.sendChatMessage = function(lobbyCode, lobbyID, message) {
+        let msg = Messages.O_CHAT_MESSAGE;
+        msg.lobbyID = lobbyID;
+        msg.message = message;
+
+        for (let player of this.getPlayersInLobby(lobbyCode)) {
+            player.websocket.send(JSON.stringify(msg));
+        }
+    }
+   
 })();

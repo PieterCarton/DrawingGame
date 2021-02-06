@@ -1,5 +1,6 @@
-module.exports = function(connectionID, username) {
+module.exports = function(connectionID, websocket, username) {
     this.connectionID = connectionID;
+    this.websocket = websocket;
     this.username = username;
     this.lobbyCode;
     this.lobbyID;
