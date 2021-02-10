@@ -109,7 +109,7 @@ CanvasContext.prototype.fill = function(){
 }
 
 //delete all nodes associated with the canvas context object from the DOM
-CanvasContext.prototype.empty = function(){
+CanvasContext.prototype.clear = function(){
     //TODO
 }
 
