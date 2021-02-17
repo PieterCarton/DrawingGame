@@ -5,7 +5,7 @@ function Player(username, lobbyID) {
     this.class = `p${lobbyID % 8 + 1}`;
 }
 
-(function() {
+export default function() {
     const urlParams = new URLSearchParams(window.location.search);
     let socket = new WebSocket(`ws:${location.host}`);
 
@@ -143,4 +143,4 @@ function Player(username, lobbyID) {
             //if lobby doesn't know how to interpret message, send to gameManager
         }
     }
-})();
+};

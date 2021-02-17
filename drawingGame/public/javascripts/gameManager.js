@@ -1,23 +1,23 @@
 //import all modules 
 //import * as test from "./exportTest.js"; example
 
-import Timer from "./timer.js";
-import DrawingContext from "./drawingContext.js";
+//import Timer from "./timer.js";
+//import CanvasContext from "./canvasContext.js";
 import Lobby from "./lobby.js";
-import Submission from "./submission.js";
+//import Submission from "./submission.js";
 
 let enabledComponents = [];
 
 //helps to find constructor for components specified in message
-let componentMap = {
+/*let componentMap = {
     "TIMER":Timer,
-    "DRAWING-CONTEXT":DrawingContext
-}
+    "DRAWING-CONTEXT":CanvasContext
+}*/
 
 //initialize lobby
 let lobby = new Lobby();
 //give lobby reference to gameManager to pass on 
-lobby.onmessage = acceptMsg;
+//lobby.onmessage = acceptMsg;
 
 
 //acceptMessage function
