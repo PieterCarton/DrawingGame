@@ -139,6 +139,8 @@ function Player(username, lobbyID) {
             delete players[jsonData.lobbyID];
         } else if (jsonData.type == Messages.T_CHAT_MESSAGE) {
             createChatMessage(jsonData.lobbyID, jsonData.message);
+        }else{
+            //if lobby doesn't know how to interpret message, send to gameManager
         }
     }
 })();
