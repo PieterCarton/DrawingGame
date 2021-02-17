@@ -1,9 +1,9 @@
 /*Simple drawing round: players are asked to draw themselves*/
 module.exports = function(players){
     //messages object
-    this.messages = require("../javascripts/messages");
+    this.messages = require("../public/javascripts/messages");
     //component object
-    this.components = require("../javascripts/components");
+    this.components = require("../public/javascripts/components");
 
 
     //list of players
@@ -52,7 +52,7 @@ module.exports = function(players){
     }
 
     //accepts messages sent by player
-    this.acceptMessage = function(msg){
-
+    this.acceptMsg = function(msg){
+        console.log("message received in round");
     };
 }

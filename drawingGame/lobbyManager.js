@@ -6,6 +6,9 @@ function lobby(code) {
 
     this.players = {};
 
+    this.game;
+    this.started = false;
+
     this.addPlayer = function(player) {
         player.setLobby(this.code, this.playerIDcounter);
         this.players[this.playerIDcounter++] = player;
@@ -37,6 +40,31 @@ function lobby(code) {
 
     this.sendMsgToPlayer = function(lobbyID, msg) {
         this.players[lobbyID].websocket.send(JSON.stringify(msg));
+    }
+
+    this.acceptMsg = function(msg){
+        //pass message over to game object
+        if(this.game){
+            //check if message is meant for lobby, otherwise pass on to game
+            this.game.acceptMsg(msg);
+        }
+    }
+
+    this.startGame = function(){
+        //check if lobby was already started
+        if(this.started){
+            console.log(`ERROR: lobby ${this.code} has already started`);
+            return;
+        }
+
+        let rounds = [require("./rounds/exampleRound")];
+
+        //initialize game
+        let gameConstructor = require("./game");
+        this.game = new gameConstructor(this.players, rounds);
+        this.game.sendmessagetoall = this.sendMsgToAllPlayers.bind(this);
+        this.game.sendmessagetoplayer = this.sendMsgToPlayer.bind(this);
+        this.game.start();
     }
 }
 
@@ -170,5 +198,34 @@ module.exports = new (function() {
             player.websocket.send(JSON.stringify(msg));
         }
     }
-   
+
+    //should ideally be handled through message interpreted in lobby itself
+    this.startGame = function(lobbyCode){
+        //check if lobby exists
+        if(!this.lobbyExists(lobbyCode)){
+            console.log(`WARNING: a non-existent lobby attempted to start: ${lobbyCode}`);
+            return;
+        }
+
+        //get lobby
+        let targetLobby = this.lobbies[lobbyCode]; 
+
+        //start game of lobby
+        targetLobby.startGame();
+    }
+    
+    this.acceptMsg = function(msg, lobbyCode){
+        //check if lobby exists
+        if(!this.lobbyExists(lobbyCode)){
+            console.log(`WARNING: a non-existent lobby was sent a message: ${lobbyCode}`);
+            return;
+        }
+
+        //get lobby
+        let targetLobby = this.lobbies[lobbyCode]; 
+
+        //start game of lobby
+        targetLobby.acceptMsg(msg);
+    }
+
 })();

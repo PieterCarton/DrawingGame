@@ -1,6 +1,4 @@
 function FrameSequence(){
-    //player that created the drawings
-    this.creator = "unknown";
     //number of frames
     this.frames = 0;
     //array storing frames

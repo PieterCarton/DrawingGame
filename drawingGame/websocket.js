@@ -34,13 +34,23 @@ module.exports = function(server) {
             } else if (jsonData.type == Messages.T_CHAT_MESSAGE) {
                 let lobbyID = jsonData.lobbyID;
                 let message = jsonData.message;
+
                 let lobbyCode = ws.player.lobbyCode;
+
+                //temporary way to start game
+                if(message == "start"){
+                    lobbyManager.startGame(lobbyCode);
+                }
 
                 if (message.length > 500) {
                     message = message.substr(0, 500);
                 }
 
                 lobbyManager.sendChatMessage(lobbyCode, lobbyID, message);
+            } else {
+                //send message to lobbyManager to handle
+                let lobbyCode = ws.player.lobbyCode;
+                lobbyManager.acceptMsg(msg, lobbyCode);
             }
         });
 
