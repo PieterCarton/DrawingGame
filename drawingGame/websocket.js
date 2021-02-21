@@ -50,7 +50,7 @@ module.exports = function(server) {
             } else {
                 //send message to lobbyManager to handle
                 let lobbyCode = ws.player.lobbyCode;
-                lobbyManager.acceptMsg(msg, lobbyCode);
+                lobbyManager.acceptMsg(jsonData, lobbyCode);
             }
         });
 

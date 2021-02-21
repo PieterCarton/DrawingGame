@@ -40,10 +40,10 @@ module.exports = function(players, rounds){
         this.gameState = "ended";
     }
 
-    this.acceptMsg = function(){
+    this.acceptMsg = function(msg){
         //check if message is meant for game, otherwise pass on to round
         if(this.currentRound){
-            this.currentRound.acceptMessageMsg();
+            this.currentRound.acceptMsg(msg);
         }
     }
 }

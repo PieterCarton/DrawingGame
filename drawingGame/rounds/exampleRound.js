@@ -15,6 +15,9 @@ module.exports = function(players){
     //callback for round ending
     this.onroundend;
 
+    //temp
+    this.hasSentMessage = false;
+
     //contains main code for round
     this.start = function(){
         //let all players draw themselves
@@ -37,15 +40,18 @@ module.exports = function(players){
 
         //start client timer
         msg = this.messages.O_START_TIMER;
-        this.sendmessagetoall(msg);
+        let msg2 = this.messages.O_MESSAGE_COMPONENT;
+        msg2.message = msg;
+        msg2.component = this.components.TIMER;
+        this.sendmessagetoall(msg2);
 
-        //wait for 30s, then continue
-        setTimeout(this.gatherDrawings.bind(this), 30*1000);
+        //wait for 10s, then continue
+        setTimeout(this.gatherDrawings.bind(this), 32*1000);
     };
 
     this.gatherDrawings = function(){
         //request all drawings from players
-        let msg = this.messages.O_REQUEST_DRAWING;
+        let msg = this.messages.O_DRAWING_REQUEST;
         this.sendmessagetoall(msg);
 
         //update 
@@ -53,6 +59,22 @@ module.exports = function(players){
 
     //accepts messages sent by player
     this.acceptMsg = function(msg){
-        console.log("message received in round");
+        //send drawings to other players
+        if(msg.type == this.messages.T_DRAWING_SUBMISSION){
+            if(this.hasSentMessage){
+                return;
+            }
+            let frameSequence = msg.imageData;
+
+            let outerMessage = this.messages.O_MESSAGE_COMPONENT;
+            outerMessage.component = this.components.CANVAS_CONTEXT;
+
+            let innerMessage = this.messages.O_DISPLAY_FRAME_SEQUENCE;
+            innerMessage.frameSequence = frameSequence;
+
+            outerMessage.message = innerMessage;
+            this.sendmessagetoall(outerMessage);
+            this.hasSentMessage = true;
+        }
     };
 }

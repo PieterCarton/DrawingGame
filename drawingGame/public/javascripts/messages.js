@@ -91,6 +91,8 @@
         type: exports.T_ENABLE_COMPONENT,
         //type of component
         component: "",
+        //name of div where component is generated
+        location: "",
         //arguments for creating component: eg starting value of a timer
         args: ""
     };
@@ -106,6 +108,18 @@
     };
     exports.S_DISABLE_COMPONENT = JSON.stringify(exports.O_DISABLE_COMPONENT);
 
+    /**
+     * Server to player: Allows server to send a nested message to a specific client side component
+     */
+    exports.T_MESSAGE_COMPONENT = "MESSAGE-COMPONENT";
+    exports.O_MESSAGE_COMPONENT = {
+        type: exports.T_MESSAGE_COMPONENT,
+        component: "",
+        //nested message for target component
+        message: ""     
+    };
+    exports.S_MESSAGE_COMPONENT = JSON.stringify(exports.O_MESSAGE_COMPONENT);
+
      /**
      * Server to player: Start timer component, if present
      */
@@ -114,6 +128,16 @@
         type: exports.T_START_TIMER
     };
     exports.S_START_TIMER = JSON.stringify(exports.O_START_TIMER);
+
+    /**
+         * Server to player: Updates the client side status bar, which informs the player about what is happening
+         */
+    exports.T_DISPLAY_FRAME_SEQUENCE = "DISPLAY-FRAME-SEQUENCE";
+    exports.O_DISPLAY_FRAME_SEQUENCE = {
+        type: exports.T_DISPLAY_FRAME_SEQUENCE,
+        frameSequence: ""
+    };
+    exports.S_DISPLAY_FRAME_SEQUENCE = JSON.stringify(exports.O_DISPLAY_FRAME_SEQUENCE);
 
     /**
      * Server to player: Updates the client side status bar, which informs the player about what is happening

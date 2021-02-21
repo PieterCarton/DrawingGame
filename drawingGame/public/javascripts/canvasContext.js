@@ -1,10 +1,14 @@
-function CanvasContext(colors, widths, parent){
+import CanvasDrawer from "./canvasDrawer.js";
+import FrameSequence from "./frameSequence.js";
+import DrawingFrame from "./drawingFrame.js";
+
+function CanvasContext(parent, args){
     //object fields
     this.interactable = true;
 
     //generate canvas and UI to manipulate canvas
-    this.colors = colors;
-    this.widths = widths;
+    this.colors = ["#000000", "#FF0000", "#00FF00", "#0000FF","#FFFF00", "#FF00FF","#00FFFF", "#FFFFFF"];
+    this.widths = [5, 10, 20, 40];
     
     //get parent node to generate canvas context in
     this.parent = document.querySelector(parent);
@@ -113,23 +117,48 @@ CanvasContext.prototype.clear = function(){
     //TODO
 }
 
+CanvasContext.prototype.acceptMsg = function(msg){
+    if(!msg){
+        console.log("ERROR: component recieved undefined message");
+        return;
+    }
+
+    if(msg.type == Messages.T_DRAWING_REQUEST){
+        //TODO
+    }else if(msg.type == Messages.T_DISPLAY_FRAME_SEQUENCE){
+        let frameSequence = msg.frameSequence;
+        this.setFrameSequence(frameSequence);
+        console.log("sequence set");
+    }else{
+        console.log("ERROR: message type unknown");
+    }
+}
+
 CanvasContext.prototype.setFrameSequence = function(frameSequence){
+    this.setFrame(0);
     this.frames = frameSequence.frames;
     for(let i = 0; i < this.frames; i++){
         this.drawingFrames[i] = frameSequence.drawingFrames[i];
     }
     //set frame data
     this.frames = frameSequence.frames;
-    this.selectedFrame = 0;
     this.drawer.setImageData(frameSequence.drawingFrames[0].imageData);
+    this.setCaption(frameSequence.drawingFrames[0].caption);
+    this.setFrame(0);
 }
 
 CanvasContext.prototype.getFrameSequence = function(){
-    //loop through all stored frames, store them in a FrameSequence object
+    //save current frame
+    this.setFrame(this.selectedFrame);
     let frameSequence = new FrameSequence();
     for(let i = 0; i < this.frames; i++){
-        frameSequence.addDrawingFrame(this.drawingFrames[i]);
+        let frame = this.drawingFrames[i];
+        if(!frame){
+            frame = new DrawingFrame();
+        }
+        frameSequence.addDrawingFrame(frame);
     }
+    console.log(frameSequence);
     return frameSequence;
 }
 
@@ -142,7 +171,6 @@ CanvasContext.prototype.prevFrame = function(){
 }
 
 CanvasContext.prototype.setFrame = function(newFrame){
-    console.log("Switching from frame " + this.selectedFrame + " to " + newFrame);
     //check if new frame is valid frame
     if(newFrame < 0 || newFrame >= this.frames){
         return;
@@ -194,4 +222,6 @@ CanvasContext.prototype.setViewOnly = function(viewOnly){
     }
 }
 
-var canvasContextObject = new CanvasContext(["#000000", "#FF0000", "#00FF00", "#0000FF","#FFFF00", "#FF00FF","#00FFFF", "#FFFFFF"], [5, 10, 20, 40], "body");
+//var canvasContextObject = new CanvasContext(["#000000", "#FF0000", "#00FF00", "#0000FF","#FFFF00", "#FF00FF","#00FFFF", "#FFFFFF"], [5, 10, 20, 40], "body");
+
+export default CanvasContext;

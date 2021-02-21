@@ -5,7 +5,7 @@ function Player(username, lobbyID) {
     this.class = `p${lobbyID % 8 + 1}`;
 }
 
-export default function() {
+export default function(parentAcceptMsg) {
     const urlParams = new URLSearchParams(window.location.search);
     let socket = new WebSocket(`ws:${location.host}`);
 
@@ -42,6 +42,13 @@ export default function() {
 
         document.body.removeChild(textArea);
     });
+
+    //allows the gameManager to send messages back to the server
+    this.sendMessage = function(msg){
+        //add lobbyID, which is not visible to gameManager
+        msg.lobbyID = lobbyID;
+        socket.send(JSON.stringify(msg));
+    }
 
     //send chat messages when pressing enter on the chatInput.
     chatInput.addEventListener("keydown", function(e) {
@@ -141,6 +148,7 @@ export default function() {
             createChatMessage(jsonData.lobbyID, jsonData.message);
         }else{
             //if lobby doesn't know how to interpret message, send to gameManager
+            parentAcceptMsg(jsonData);
         }
     }
 };

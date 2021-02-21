@@ -1,3 +1,5 @@
+import Point from "./point.js"
+
 //canvas drawer constructor
 function CanvasDrawer(canvas){
     //canvas info
@@ -82,14 +84,14 @@ function CanvasDrawer(canvas){
 
     //save/undo functions
     this.saveFrame = function(){
-        let frame = this.getImageData();
         //update number of saved frames
         if(this.savedFrames < this.maxSavedFrames){
             this.savedFrames++;
         }
         //place in saved frames array
         let index = this.frameIndex % this.maxSavedFrames;
-        this.undoFrames[index] = this.getImageData();
+        let data = this.canvas.toDataURL();
+        this.undoFrames[index] = data;
         //update frame index
         this.frameIndex++;
     }
@@ -115,13 +117,17 @@ function CanvasDrawer(canvas){
     //image data manipulation
     this.clearImageData = function(){
         let context = this.canvas.getContext("2d");
-        let empty = context.createImageData(this.getImageData());
-        this.setImageData(empty);
+        let empty = context.createImageData(this.getRawImageData());
+        context.putImageData(empty, 0, 0);
     };
     
-    this.getImageData = function(){
+    this.getRawImageData = function(){
         let context = this.canvas.getContext("2d");
         return context.getImageData(0, 0, this.width, this.height);
+    };
+
+    this.getImageData = function(){
+        return this.canvas.toDataURL();
     };
     
     this.setImageData = function(imgData){
@@ -130,8 +136,13 @@ function CanvasDrawer(canvas){
             this.clearImageData();
             return;
         }//if image data is defined, set image data of canvas to new imgData
-        let context = this.canvas.getContext("2d");
-        context.putImageData(imgData, 0, 0);
+        let image = new Image();
+        image.addEventListener("load", function(){
+            this.clearImageData();
+            let context = this.canvas.getContext("2d");
+            context.drawImage(image, 0, 0);
+        }.bind(this))
+        image.src = imgData;
     };
 
     //setup listeners, give reference to this
@@ -140,3 +151,5 @@ function CanvasDrawer(canvas){
     canvas.onmousemove = this.drawLine.bind(this);
     canvas.onmouseleave = this.onLeave.bind(this);
 }
+
+export default CanvasDrawer;

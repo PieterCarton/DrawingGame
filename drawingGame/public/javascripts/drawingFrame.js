@@ -8,3 +8,5 @@ DrawingFrame.prototype.setCaption = function(caption){
     this.captioned = true;
     this.caption = caption;
 }
+
+export default DrawingFrame;

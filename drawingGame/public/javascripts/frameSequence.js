@@ -6,10 +6,12 @@ function FrameSequence(){
 }
 
 FrameSequence.prototype.addDrawingFrame = function(drawingFrame){
-    this.drawingFrames[frames] = drawingFrame;
+    this.drawingFrames[this.frames] = drawingFrame;
     this.frames++;
 }
 
 FrameSequence.prototype.setCreator = function(creator){
     this.creator = creator;
 }
+
+export default FrameSequence;
